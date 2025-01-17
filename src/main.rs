@@ -186,7 +186,8 @@ fn rocket() -> _ {
             email VARCHAR(100) UNIQUE,
             telefone VARCHAR(15),
             login VARCHAR(50) UNIQUE,
-            senha VARCHAR(255)
+            senha VARCHAR(255),
+            role ENUM('estudante', 'professor', 'admin') NOT NULL DEFAULT 'estudante'
         )"
     ).expect("Erro ao criar tabela");
 
