@@ -1,6 +1,9 @@
 #[macro_use] extern crate rocket;
 
 mod models;
+mod routes;
+mod guards;
+mod utils;
 
 use rocket::form::Form;
 use rocket::State;
