@@ -1,10 +1,10 @@
 #[macro_use] extern crate rocket;
 
-mod config;
-mod models;
-mod routes;
-mod guards;
-mod utils;
+mod config; // Configuração da conexão com o banco de dados
+mod models; // Modelos de dados (structs)
+mod routes; // Rotas da aplicação
+mod guards; // Guards de autenticação e autorização
+mod utils; //  Funções auxiliares (JWT, Hashing)
 
 use rocket::form::Form;
 use rocket::State;
