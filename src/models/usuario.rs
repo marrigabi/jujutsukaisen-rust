@@ -2,11 +2,19 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Usuario {
-    pub id: u32,
-    pub nome: String,
-    pub sobrenome: String,
-    pub email: String,
-    pub login: String,
-    pub senha: String,
+    id: u32,
+    nome: String,
+    sobrenome: String,
+    cpf: String,
+    email: String,
+    telefone: String,
+    login: String,
+    senha: String,
     pub role: String, // "estudante", "professor" ou "admin"
+}
+
+impl Usuario {
+    pub fn new(id: u32, nome: String, sobrenome: String, cpf: String, email: String, telefone: String, login: String, senha: String, role: String) -> Self {
+        Usuario { id, nome, sobrenome, cpf, email, telefone, login, senha, role }
+    }
 }

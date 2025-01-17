@@ -1,18 +1,22 @@
 #[macro_use] extern crate rocket;
 
+mod models;
+
 use rocket::form::Form;
 use rocket::State;
 use rocket::response::Redirect;
 use rocket_dyn_templates::{Template, context};
 use mysql::*;
 use mysql::prelude::*;
-use serde::{Deserialize, Serialize};
+//use serde::{Deserialize, Serialize};
+
+use crate::models::usuario::Usuario;
 
 // Estrutura para conexão com o MySQL
 struct DbPool(Pool);
 
 // Estrutura para armazenar um usuário
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/*#[derive(Debug, Clone, Serialize, Deserialize)]
 struct Usuario {
     id: u32,
     nome: String,
@@ -22,7 +26,7 @@ struct Usuario {
     telefone: String,
     login: String,
     senha: String,
-}
+}*/
 
 // Estrutura para capturar os dados do formulário
 #[derive(FromForm)]
@@ -42,8 +46,8 @@ fn listar_usuarios(pool: &State<DbPool>) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     let usuarios: Vec<Usuario> = conn.query_map(
-        "SELECT id, nome, sobrenome, cpf, email, telefone, login, senha FROM usuarios",
-        |(id, nome, sobrenome, cpf, email, telefone, login, senha)| Usuario { id, nome, sobrenome, cpf, email, telefone, login, senha },
+        "SELECT id, nome, sobrenome, cpf, email, telefone, login, senha, role FROM usuarios",
+        |(id, nome, sobrenome, cpf, email, telefone, login, senha, role)| Usuario::new (id, nome, sobrenome, cpf, email, telefone, login, senha, role),
     ).expect("Falha ao buscar usuários");
 
     Template::render("usuarios", context! {
@@ -133,9 +137,9 @@ fn edit_usuario_page(pool: &State<DbPool>, id: u32) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     let usuarios: Vec<Usuario> = conn.exec_map(
-        "SELECT id, nome, sobrenome, cpf, email, telefone, login, senha FROM usuarios WHERE id = ? LIMIT 1",
+        "SELECT id, nome, sobrenome, cpf, email, telefone, login, senha, role FROM usuarios WHERE id = ? LIMIT 1",
         (id,),
-        |(id, nome, sobrenome, cpf, email, telefone, login, senha)| Usuario { id, nome, sobrenome, cpf, email, telefone, login, senha },
+        |(id, nome, sobrenome, cpf, email, telefone, login, senha, role)| Usuario::new (id, nome, sobrenome, cpf, email, telefone, login, senha, role),
     ).expect("Erro ao buscar usuário");
 
     if let Some(user) = usuarios.into_iter().next() {
