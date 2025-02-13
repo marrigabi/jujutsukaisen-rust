@@ -3,7 +3,7 @@ use rocket::response::status;
 use rocket::State;
 use rocket::serde::json::Json;
 use crate::config::database::DbPool;
-use crate::models::usuario::Usuario;
+use crate::models::feiticeiro::feiticeiro;
 use crate::utils::{hashing, jwt};
 
 #[derive(FromForm)]

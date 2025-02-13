@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Feiticeiros</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Lista de Feiticeiros Jujutsu</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Grau</th>
+                <th>Técnica Amaldiçoada</th>
+                <th>Afiliação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each feiticeiros}}
+            <tr>
+                <td>{{this.nome}}</td>
+                <td>{{this.grau}}</td>
+                <td>{{this.tecnica}}</td>
+                <td>{{this.afiliacao}}</td>
+                <td>
+                    <a href="/editar_feiticeiro/{{this.id}}">Editar</a> |
+                    <a href="/expulsar-feiticeiro/{{this.id}}" onclick="return confirm('Tem certeza que deseja expulsar este feiticeiro?')">Expulsar</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <a href="/">Voltar</a>
+</body>
+</html>
+
+
+
