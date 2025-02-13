@@ -4,7 +4,7 @@ mod config; // Configuração da conexão com o banco de dados
 mod models; // Modelos de dados (structs)
 mod routes; // Rotas da aplicação
 mod guards; // Guards de autenticação e autorização
-mod utils; //  Funções auxiliares (JWT, Hashing)
+mod utils; // Funções auxiliares (JWT, Hashing)
 
 use rocket::form::Form;
 use rocket::State;
@@ -14,186 +14,144 @@ use mysql::*;
 use mysql::prelude::*;
 //use serde::{Deserialize, Serialize};
 
-use crate::models::usuario::Usuario;
+use crate::models::feiticeiro::Feiticeiro; 
+
 
 // Estrutura para conexão com o MySQL
 struct DbPool(Pool);
 
-// Estrutura para armazenar um usuário
-/*#[derive(Debug, Clone, Serialize, Deserialize)]
-struct Usuario {
-    id: u32,
-    nome: String,
-    sobrenome: String,
-    cpf: String,
-    email: String,
-    telefone: String,
-    login: String,
-    senha: String,
-}*/
-
 // Estrutura para capturar os dados do formulário
 #[derive(FromForm)]
-struct UserInput {
+struct FeiticeiroInput {
     nome: String,
-    sobrenome: String,
-    cpf: String,
-    email: String,
-    telefone: String,
+    grau: String, // Grau do feiticeiro, ex: "Jujutsu" ou "Especial"
+    tecnica: String, // Técnica amaldiçoada
+    afiliacao: String, // Jujutsu High, Associação de Feiticeiros, etc.
     login: String,
     senha: String,
 }
 
-// Rota para listar usuários do banco de dados
-#[get("/listar_usuarios")]
-fn listar_usuarios(pool: &State<DbPool>) -> Template {
+// Rota para listar feiticeiros do banco de dados
+#[get("/listar-feiticeiros")]
+fn listar_feiticeiros(pool: &State<DbPool>) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
-    let usuarios: Vec<Usuario> = conn.query_map(
-        "SELECT id, nome, sobrenome, cpf, email, telefone, login, senha, role FROM usuarios",
-        |(id, nome, sobrenome, cpf, email, telefone, login, senha, role)| Usuario::new (id, nome, sobrenome, cpf, email, telefone, login, senha, role),
-    ).expect("Falha ao buscar usuários");
+    let feiticeiros: Vec<Feiticeiro> = conn.query_map(
+        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros",
+        |(id, nome, grau, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau, tecnica, afiliacao, login, senha),
+    ).expect("Falha ao buscar feiticeiros");
 
-    Template::render("usuarios", context! {
-        title: "Lista de Usuários",
-        usuarios
+    Template::render("feiticeiros", context! {
+        title: "Lista de Feiticeiros Jujutsu",
+        feiticeiros
     })
 }
 
-// Rota para adicionar um novo usuário via formulário
-#[post("/add-user", data = "<user_input>")]
-fn add_usuario(pool: &State<DbPool>, user_input: Form<UserInput>) -> Template {
-    let user = user_input.into_inner();
+// Rota para adicionar um novo feiticeiro via formulário
+#[post("/add-feiticeiro", data = "<feiticeiro_input>")]
+fn add_feiticeiro(pool: &State<DbPool>, feiticeiro_input: Form<FeiticeiroInput>) -> Template {
+    let feiticeiro = feiticeiro_input.into_inner();
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     conn.exec_drop(
-        "INSERT INTO usuarios (nome, sobrenome, cpf, email, telefone, login, senha) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (&user.nome, &user.sobrenome, &user.cpf, &user.email, &user.telefone, &user.login, &user.senha),
-    ).expect("Erro ao inserir usuário");
+        "INSERT INTO feiticeiros (nome, grau, tecnica, afiliacao, login, senha) VALUES (?, ?, ?, ?, ?, ?)",
+        (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha),
+    ).expect("Erro ao inserir feiticeiro");
 
     Template::render("success", context! {
-        title: "Usuário Adicionado",
-        message: format!("Usuário {} cadastrado com sucesso!", user.nome)
+        title: "Feiticeiro Cadastrado",
+        message: format!("Feiticeiro {} registrado com sucesso!", feiticeiro.nome)
     })
 }
 
 #[get("/")]
 fn index() -> Template {
-    // Aqui, você pode passar dados opcionais para o template usando o contexto
     Template::render("index", context! {
         title: "Página Inicial",
-        message: "Bem-vindo à página inicial!"
+        message: "Bem-vindo à escola Jujutsu!"
     })
 }
 
-// Estrutura para capturar os dados do formulário
-//#[derive(FromForm)]
-/*struct UserInput {
-    first_name: String,
-    last_name: String,
-}*/
-
-// Rota POST para processar o formulário e renderizar a página de saudação
-#[post("/submit", data = "<user_input>")]
-fn submit(user_input: Form<UserInput>) -> Template {
-    let user = user_input.into_inner();
-    Template::render("greeting", context! {
-        title: "Saudação",
-        greeting_message: format!("Olá, {} {}!", user.nome, user.sobrenome)
-    })
-}
-
-// Nova rota para a lista de músicas favoritas
-#[get("/favorite-songs")]
-fn favorite_songs() -> Template {
-
-
-    let songs = vec![
-        "Imagine - John Lennon",
-        "Bohemian Rhapsody - Queen",
-        "Stairway to Heaven - Led Zeppelin",
-        "Hotel California - Eagles",
-        "Hey Jude - The Beatles",
+// Nova rota para listar feiticeiros famosos
+#[get("/feiticeiros-famosos")]
+fn feiticeiros_famosos() -> Template {
+    let feiticeiros = vec![
+        "Gojo Satoru - Técnica: Infinito",
+        "Itadori Yuji - Técnica: Sukuna",
+        "Fushiguro Megumi - Técnica: Shikigami",
+        "Nobara Kugisaki - Técnica: Straw Doll",
     ];
 
-    Template::render("favorite_songs", context! {
-        title: "Minhas Músicas Favoritas",
-        songs
+    Template::render("feiticeiros_famosos", context! {
+        title: "Feiticeiros Famosos",
+        feiticeiros
     })
 }
 
-
-// Deletar usuário
-#[get("/delete-user/<id>")]
-fn delete_usuario(pool: &State<DbPool>, id: u32) -> Redirect {
+// Rota para expulsar um feiticeiro
+#[get("/expulsar-feiticeiro/<id>")]
+fn expulsar_feiticeiro(pool: &State<DbPool>, id: u32) -> Redirect {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
-    conn.exec_drop("DELETE FROM usuarios WHERE id = ?", (id,))
-        .expect("Erro ao deletar usuário");
+    conn.exec_drop("DELETE FROM feiticeiros WHERE id = ?", (id,))
+        .expect("Erro ao expulsar feiticeiro");
 
-    Redirect::to("/listar_usuarios")
+    Redirect::to("/listar_feiticeiros")
 }
 
-
-// Página de edição de usuário
-#[get("/edit-user/<id>")]
-fn edit_usuario_page(pool: &State<DbPool>, id: u32) -> Template {
+// Página de edição de feiticeiro
+#[get("/editar-feiticeiro/<id>")]
+fn editar_feiticeiro(pool: &State<DbPool>, id: u32) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
-    let usuarios: Vec<Usuario> = conn.exec_map(
-        "SELECT id, nome, sobrenome, cpf, email, telefone, login, senha, role FROM usuarios WHERE id = ? LIMIT 1",
+    let feiticeiros: Vec<Feiticeiro> = conn.exec_map(
+        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros WHERE id = ? LIMIT 1",
         (id,),
-        |(id, nome, sobrenome, cpf, email, telefone, login, senha, role)| Usuario::new (id, nome, sobrenome, cpf, email, telefone, login, senha, role),
-    ).expect("Erro ao buscar usuário");
+        |(id, nome, grau, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau, tecnica, afiliacao, login, senha),
+    ).expect("Erro ao buscar feiticeiro");
 
-    if let Some(user) = usuarios.into_iter().next() {
-        Template::render("edit_user", context! { title: "Editar Usuário", user })
+    if let Some(feiticeiro) = feiticeiros.into_iter().next() {
+        Template::render("editar_feiticeiro", context! { title: "Editar Feiticeiro", feiticeiro })
     } else {
-        Template::render("error", context! { message: "Usuário não encontrado!" })
+        Template::render("error", context! { message: "Feiticeiro não encontrado!" })
     }
 }
 
-// Atualizar usuário
-#[post("/update-user/<id>", data = "<user_input>")]
-fn update_usuario(pool: &State<DbPool>, id: u32, user_input: Form<UserInput>) -> Redirect {
-    let user = user_input.into_inner();
+// Atualizar feiticeiro
+#[post("/atualizar-feiticeiro/<id>", data = "<feiticeiro_input>")]
+fn atualizar_feiticeiro(pool: &State<DbPool>, id: u32, feiticeiro_input: Form<FeiticeiroInput>) -> Redirect {
+    let feiticeiro = feiticeiro_input.into_inner();
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     conn.exec_drop(
-        "UPDATE usuarios SET nome = ?, sobrenome = ?, cpf = ?, email = ?, telefone = ?, login = ?, senha = ? WHERE id = ?",
-        (&user.nome, &user.sobrenome, &user.cpf, &user.email, &user.telefone, &user.login, &user.senha, id),
-    ).expect("Erro ao atualizar usuário");
+        "UPDATE feiticeiros SET nome = ?, grau = ?, tecnica = ?, afiliacao = ?, login = ?, senha = ? WHERE id = ?",
+        (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha, id),
+    ).expect("Erro ao atualizar feiticeiro");
 
-    Redirect::to("/listar_usuarios")
+    Redirect::to("/listar_feiticeiros")
 }
-
-
 
 #[launch]
 fn rocket() -> _ {
-
-    let url = "mysql://root:@localhost:3306/riseonmusic";
+    let url = "mysql://root:@localhost:3306/jujutsu_kaisen";
     let pool = Pool::new(url).expect("Falha ao criar conexão com MySQL");
 
     // Criando a tabela se não existir
     let mut conn = pool.get_conn().expect("Falha ao conectar ao banco");
     conn.query_drop(
-        r"CREATE TABLE IF NOT EXISTS usuarios (
+        r"CREATE TABLE IF NOT EXISTS feiticeiros (
             id INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(100),
-            sobrenome VARCHAR(100),
-            cpf VARCHAR(14) UNIQUE,
-            email VARCHAR(100) UNIQUE,
-            telefone VARCHAR(15),
+            grau VARCHAR(50),
+            tecnica VARCHAR(255),
+            afiliacao VARCHAR(100),
             login VARCHAR(50) UNIQUE,
-            senha VARCHAR(255),
-            role ENUM('estudante', 'professor', 'admin') NOT NULL DEFAULT 'estudante'
+            senha VARCHAR(255)
         )"
     ).expect("Erro ao criar tabela");
 
-
     rocket::build()
         .manage(DbPool(pool)) // Adiciona a conexão ao estado do Rocket
-        .mount("/", routes![index, submit, favorite_songs, listar_usuarios, add_usuario, edit_usuario_page, update_usuario, delete_usuario])
+        .mount("/", routes![index, listar_feiticeiros, add_feiticeiro, feiticeiros_famosos, expulsar_feiticeiro, editar_feiticeiro, atualizar_feiticeiro])
         .attach(Template::fairing()) // Anexa o fairing do Handlebars para processar templates
 }
