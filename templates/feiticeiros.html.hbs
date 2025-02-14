@@ -5,37 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Feiticeiros</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Estilo simples para a visualização */
+        .feiticeiro-container {
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .feiticeiro-container h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .feiticeiro-info {
+            margin-bottom: 8px;
+        }
+
+        .acoes {
+            margin-top: 10px;
+        }
+
+        .acoes a {
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #cb429b;
+            color: white;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .acoes a:hover {
+            background-color: #cb429b;
+        }
+    </style>
 </head>
 <body>
     <h1>Lista de Feiticeiros Jujutsu</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Grau</th>
-                <th>Técnica Amaldiçoada</th>
-                <th>Afiliação</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each feiticeiros}}
-            <tr>
-                <td>{{this.nome}}</td>
-                <td>{{this.grau}}</td>
-                <td>{{this.tecnica}}</td>
-                <td>{{this.afiliacao}}</td>
-                <td>
-                    <a href="/editar_feiticeiro/{{this.id}}">Editar</a> |
-                    <a href="/expulsar-feiticeiro/{{this.id}}" onclick="return confirm('Tem certeza que deseja expulsar este feiticeiro?')">Expulsar</a>
-                </td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
+    <div>
+        {{#each feiticeiros}}
+        <div class="feiticeiro-container">
+            <h2>{{this.nome}}</h2>
+            <div class="feiticeiro-info"><strong>Grau:</strong> {{this.grau}}</div>
+            <div class="feiticeiro-info"><strong>Técnica Amaldiçoada:</strong> {{this.tecnica}}</div>
+            <div class="feiticeiro-info"><strong>Afiliação:</strong> {{this.afiliacao}}</div>
+            <div class="acoes">
+                <a href="/editar_feiticeiro/{{this.id}}">Editar</a>
+                <a href="/expulsar-feiticeiro/{{this.id}}" onclick="return confirm('Tem certeza que deseja expulsar este feiticeiro?')">Expulsar</a>
+            </div>
+        </div>
+        {{/each}}
+    </div>
     <a href="/">Voltar</a>
 </body>
 </html>
-
-
-

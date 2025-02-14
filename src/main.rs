@@ -15,6 +15,7 @@ use mysql::prelude::*;
 //use serde::{Deserialize, Serialize};
 
 use crate::models::feiticeiro::Feiticeiro; 
+//use models::feiticeiros::listar_feiticeiros; 
 
 
 // Estrutura para conexão com o MySQL
@@ -54,7 +55,7 @@ fn add_feiticeiro(pool: &State<DbPool>, feiticeiro_input: Form<FeiticeiroInput>)
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     conn.exec_drop(
-        "INSERT INTO feiticeiros (nome, grau, tecnica, afiliacao, login, senha) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO `feiticeiros`(`id`, `nome`, `grau`, `tecnica`, `afiliacao`, `login`, `senha`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]','[value-6]','[value-7]')",
         (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha),
     ).expect("Erro ao inserir feiticeiro");
 
@@ -96,7 +97,7 @@ fn expulsar_feiticeiro(pool: &State<DbPool>, id: u32) -> Redirect {
     conn.exec_drop("DELETE FROM feiticeiros WHERE id = ?", (id,))
         .expect("Erro ao expulsar feiticeiro");
 
-    Redirect::to("/listar_feiticeiros")
+    Redirect::to("/listar-feiticeiros")
 }
 
 // Página de edição de feiticeiro
@@ -105,7 +106,7 @@ fn editar_feiticeiro(pool: &State<DbPool>, id: u32) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     let feiticeiros: Vec<Feiticeiro> = conn.exec_map(
-        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros WHERE id = ? LIMIT 1",
+        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros WHERE id =  LIMIT 1",
         (id,),
         |(id, nome, grau, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau, tecnica, afiliacao, login, senha),
     ).expect("Erro ao buscar feiticeiro");
@@ -128,7 +129,7 @@ fn atualizar_feiticeiro(pool: &State<DbPool>, id: u32, feiticeiro_input: Form<Fe
         (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha, id),
     ).expect("Erro ao atualizar feiticeiro");
 
-    Redirect::to("/listar_feiticeiros")
+    Redirect::to("/listar-feiticeiros")
 }
 
 #[launch]
