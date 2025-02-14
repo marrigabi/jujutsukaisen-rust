@@ -48,6 +48,13 @@ fn listar_feiticeiros(pool: &State<DbPool>) -> Template {
     })
 }
 
+#[get("/add-feiticeiro")]
+fn exibir_formulario() -> Template {
+    Template::render("add_feiticeiro", context! {
+        title: "Cadastrar Feiticeiro"
+    })
+}
+
 // Rota para adicionar um novo feiticeiro via formulário
 #[post("/add-feiticeiro", data = "<feiticeiro_input>")]
 fn add_feiticeiro(pool: &State<DbPool>, feiticeiro_input: Form<FeiticeiroInput>) -> Template {
@@ -55,7 +62,7 @@ fn add_feiticeiro(pool: &State<DbPool>, feiticeiro_input: Form<FeiticeiroInput>)
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     conn.exec_drop(
-        "INSERT INTO `feiticeiros`(`id`, `nome`, `grau`, `tecnica`, `afiliacao`, `login`, `senha`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]','[value-6]','[value-7]')",
+        "INSERT INTO `feiticeiros`(`nome`, `grau`, `tecnica`, `afiliacao`, `login`, `senha`) VALUES (?, ?, ?, ?, ?, ?)",
         (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha),
     ).expect("Erro ao inserir feiticeiro");
 
@@ -153,6 +160,6 @@ fn rocket() -> _ {
 
     rocket::build()
         .manage(DbPool(pool)) // Adiciona a conexão ao estado do Rocket
-        .mount("/", routes![index, listar_feiticeiros, add_feiticeiro, feiticeiros_famosos, expulsar_feiticeiro, editar_feiticeiro, atualizar_feiticeiro])
+        .mount("/", routes![index, listar_feiticeiros, add_feiticeiro, feiticeiros_famosos, expulsar_feiticeiro, editar_feiticeiro, atualizar_feiticeiro, exibir_formulario])
         .attach(Template::fairing()) // Anexa o fairing do Handlebars para processar templates
 }
