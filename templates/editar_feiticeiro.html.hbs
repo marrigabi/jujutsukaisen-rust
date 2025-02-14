@@ -8,9 +8,9 @@
 </head>
 <body>
     <h1>Editar Feiticeiro</h1>
-    <form action="/atualizar-feiticeiro/{{feiticeiro.id}}" method="POST">
+    <form action="/atualizar-feiticeiro/{{feiticeiros.id}}" method="POST">
         <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" value="{{feiticeiro.nome}}" required>
+        <input type="text" id="nome" name="nome" value="{{feiticeiros.nome}}" required>
 
         <label for="grau">Grau:</label>
         <select id="grau" name="grau">
@@ -30,6 +30,6 @@
 
         <button type="submit">Atualizar</button>
     </form>
-    <a href="/listar_feiticeiros">Cancelar</a>
+    <a href="/listar-feiticeiros">Cancelar</a>
 </body>
 </html>
