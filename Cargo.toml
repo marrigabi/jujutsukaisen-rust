@@ -12,3 +12,4 @@ serde = "1.0.217"
 [dependencies.rocket_dyn_templates]
 version = "0.2.0"
 features = ["handlebars", "tera"]
+
