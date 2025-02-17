@@ -4,32 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Feiticeiro</title>
-    <link rel="stylesheet" href="/static/style.css">
+      <link rel="preload" href="/static/images/1345576.jpeg" as="image">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2d0c3a;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            background-color: #4a1567;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            margin: auto;
+        }
+        h1 {
+            color: #f0abff;
+        }
+        label {
+            font-size: 1.2em;
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        button {
+            background-color: #f0abff;
+            color: #2d0c3a;
+            border: none;
+            padding: 10px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #d78be7;
+        }
+        a {
+            display: block;
+            margin-top: 15px;
+            color: #f0abff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <h1>Editar Feiticeiro</h1>
-    <form action="/atualizar-feiticeiro/{{feiticeiros.id}}" method="POST">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" value="{{feiticeiros.nome}}" required>
+    <div class="container">
+        <form action="/atualizar-feiticeiro/{{feiticeiro.id}}" method="POST">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" value="{{feiticeiro.nome}}" required>
 
-        <label for="grau">Grau:</label>
-        <select id="grau" name="grau">
-            <option value="Especial" {{#if (eq feiticeiro.grau "Especial")}}selected{{/if}}>Especial</option>
-            <option value="1º Grau" {{#if (eq feiticeiro.grau "1º Grau")}}selected{{/if}}>1º Grau</option>
-            <option value="2º Grau" {{#if (eq feiticeiro.grau "2º Grau")}}selected{{/if}}>2º Grau</option>
-            <option value="3º Grau" {{#if (eq feiticeiro.grau "3º Grau")}}selected{{/if}}>3º Grau</option>
-            <option value="4º Grau" {{#if (eq feiticeiro.grau "4º Grau")}}selected{{/if}}>4º Grau</option>
-            <option value="Sem Grau" {{#if (eq feiticeiro.grau "Sem Grau")}}selected{{/if}}>Sem Grau</option>
-        </select>
+            <label for="grau">Grau:</label>
+            <select id="grau" name="grau">
+                <option value="Especial" {{#if (eq feiticeiro.grau "Especial")}}selected{{/if}}>Especial</option>
+                <option value="Novato" {{#if (eq feiticeiro.grau "Novato")}}selected{{/if}}>Novato</option>
+                <option value="Intermediário" {{#if (eq feiticeiro.grau "Intermediário")}}selected{{/if}}>Intermediário</option>
+                <option value="Avançado" {{#if (eq feiticeiro.grau "Avançado")}}selected{{/if}}>Avançado</option>
+            </select>
 
-        <label for="tecnica">Técnica Amaldiçoada:</label>
-        <input type="text" id="tecnica" name="tecnica" value="{{feiticeiro.tecnica}}" required>
+            <label for="tecnica">Técnica Amaldiçoada:</label>
+            <input type="text" id="tecnica" name="tecnica" value="{{feiticeiro.tecnica}}" required>
 
-        <label for="afiliacao">Afiliação:</label>
-        <input type="text" id="afiliacao" name="afiliacao" value="{{feiticeiro.afiliacao}}" required>
+            <label for="afiliacao">Afiliação:</label>
+            <input type="text" id="afiliacao" name="afiliacao" value="{{feiticeiro.afiliacao}}" required>
 
-        <button type="submit">Atualizar</button>
-    </form>
-    <a href="/listar-feiticeiros">Cancelar</a>
+            <!-- NOVOS CAMPOS ADICIONADOS -->
+            <label for="login">Login:</label>
+            <input type="text" id="login" name="login" value="{{feiticeiro.login}}" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" required>
+
+            <button type="submit">Atualizar</button>
+        </form>
+        <a href="/listar-feiticeiros">Cancelar</a>
+    </div>
 </body>
 </html>
