@@ -12,6 +12,8 @@ use rocket::response::Redirect;
 use rocket_dyn_templates::{Template, context};
 use mysql::*;
 use mysql::prelude::*;
+use rocket::fs::{FileServer, relative};
+
 //use serde::{Deserialize, Serialize};
 
 use crate::models::feiticeiro::Feiticeiro; 
@@ -108,12 +110,12 @@ fn expulsar_feiticeiro(pool: &State<DbPool>, id: u32) -> Redirect {
 }
 
 // Página de edição de feiticeiro
-#[get("/editar-feiticeiro/<id>")]
+#[get("/editar_feiticeiro/<id>")]
 fn editar_feiticeiro(pool: &State<DbPool>, id: u32) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     let feiticeiros: Vec<Feiticeiro> = conn.exec_map(
-        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros WHERE id =  LIMIT 1",
+        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros WHERE id = ? LIMIT 1",
         (id,),
         |(id, nome, grau, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau, tecnica, afiliacao, login, senha),
     ).expect("Erro ao buscar feiticeiro");
@@ -132,8 +134,8 @@ fn atualizar_feiticeiro(pool: &State<DbPool>, id: u32, feiticeiro_input: Form<Fe
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     conn.exec_drop(
-        "UPDATE feiticeiros SET nome = ?, grau = ?, tecnica = ?, afiliacao = ?, login = ?, senha = ? WHERE id = ?",
-        (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha, id),
+        "UPDATE feiticeiros SET nome = ?, grau = ?, tecnica = ?, afiliacao = ? WHERE id = ?",
+        (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, id),
     ).expect("Erro ao atualizar feiticeiro");
 
     Redirect::to("/listar-feiticeiros")
@@ -161,5 +163,7 @@ fn rocket() -> _ {
     rocket::build()
         .manage(DbPool(pool)) // Adiciona a conexão ao estado do Rocket
         .mount("/", routes![index, listar_feiticeiros, add_feiticeiro, feiticeiros_famosos, expulsar_feiticeiro, editar_feiticeiro, atualizar_feiticeiro, exibir_formulario])
+        .mount("/static", FileServer::from(relative!("static")))
         .attach(Template::fairing()) // Anexa o fairing do Handlebars para processar templates
+        
 }
