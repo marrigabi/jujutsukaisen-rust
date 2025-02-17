@@ -4,28 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Feiticeiros</title>
+      <link rel="preload" href="/static/images/1345576.jpeg" as="image">
     <link rel="stylesheet" href="/static/style.css">
     <style>
-        /* Estilo simples para a visualização */
+        /* Estilo geral do corpo */
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/static/images/1345576.jpeg'); /* Caminho da imagem de fundo */
+            background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
+            background-position: center center; /* Centraliza a imagem */
+            background-attachment: fixed; /* A imagem ficará fixa ao rolar a página */
+            padding: 20px;
+            margin: 0;
+            color: #fff; /* Texto em branco para contraste */
+        }
+
+        /* Título da página */
+        h1 {
+            text-align: center;
+            color: #cb429b;
+            margin-bottom: 20px;
+        }
+
+        /* Container para a grid */
+        .feiticeiros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Grade responsiva */
+            gap: 20px;
+            justify-items: center;
+            margin-top: 30px;
+        }
+
+        /* Estilo para cada item na grade */
         .feiticeiro-container {
             border: 1px solid #ddd;
-            margin-bottom: 15px;
-            padding: 10px;
+            padding: 15px;
             border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: rgba(255, 255, 255, 0.8); /* Fundo semitransparente para ver a imagem de fundo */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px;
         }
 
         .feiticeiro-container h2 {
             font-size: 1.5em;
             margin-bottom: 10px;
+            color: #cb429b;
         }
 
         .feiticeiro-info {
             margin-bottom: 8px;
+            color: #555;
         }
 
+        /* Estilo para os links das ações */
         .acoes {
             margin-top: 10px;
+            text-align: center;
         }
 
         .acoes a {
@@ -35,16 +70,31 @@
             color: white;
             border-radius: 5px;
             margin-right: 10px;
+            font-size: 0.9em;
         }
 
         .acoes a:hover {
-            background-color: #cb429b;
+            background-color: #a03a7a;
+        }
+
+        /* Estilo para o link de voltar */
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #cb429b;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <h1>Lista de Feiticeiros Jujutsu</h1>
-    <div>
+    <div class="feiticeiros-grid">
         {{#each feiticeiros}}
         <div class="feiticeiro-container">
             <h2>{{this.nome}}</h2>
