@@ -14,6 +14,7 @@ use mysql::*;
 use mysql::prelude::*;
 use rocket::fs::{FileServer, relative};
 
+
 //use serde::{Deserialize, Serialize};
 
 use crate::models::feiticeiro::Feiticeiro; 
@@ -27,7 +28,7 @@ struct DbPool(Pool);
 #[derive(FromForm)]
 struct FeiticeiroInput {
     nome: String,
-    grau: String, // Grau do feiticeiro, ex: "Jujutsu" ou "Especial"
+    grau_id: String, // Grau do feiticeiro, ex: "Jujutsu" ou "Especial"
     tecnica: String, // Técnica amaldiçoada
     afiliacao: String, // Jujutsu High, Associação de Feiticeiros, etc.
     login: String,
@@ -40,8 +41,8 @@ fn listar_feiticeiros(pool: &State<DbPool>) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     let feiticeiros: Vec<Feiticeiro> = conn.query_map(
-        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros",
-        |(id, nome, grau, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau, tecnica, afiliacao, login, senha),
+        "SELECT id, nome, grau_id, tecnica, afiliacao, login, senha FROM feiticeiros",
+        |(id, nome, grau_id, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau_id, tecnica, afiliacao, login, senha),
     ).expect("Falha ao buscar feiticeiros");
 
     Template::render("feiticeiros", context! {
@@ -50,12 +51,18 @@ fn listar_feiticeiros(pool: &State<DbPool>) -> Template {
     })
 }
 
+
 #[get("/add-feiticeiro")]
-fn exibir_formulario() -> Template {
+fn exibir_formulario(pool: &State<DbPool>) -> Template {
+    let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
+    )
+
     Template::render("add_feiticeiro", context! {
-        title: "Cadastrar Feiticeiro"
+        title: "Cadastrar Feiticeiro",
+   
     })
 }
+
 
 // Rota para adicionar um novo feiticeiro via formulário
 #[post("/add-feiticeiro", data = "<feiticeiro_input>")]
@@ -64,8 +71,8 @@ fn add_feiticeiro(pool: &State<DbPool>, feiticeiro_input: Form<FeiticeiroInput>)
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     conn.exec_drop(
-        "INSERT INTO `feiticeiros`(`nome`, `grau`, `tecnica`, `afiliacao`, `login`, `senha`) VALUES (?, ?, ?, ?, ?, ?)",
-        (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha),
+        "INSERT INTO `feiticeiros`(`nome`, `tecnica`, `afiliacao`, `login`, `senha`, `grau_id`) VALUES (?, ?, ?, ?, ?, ?)",
+        (&feiticeiro.nome, &feiticeiro.tecnica, &feiticeiro.afiliacao, &feiticeiro.login, &feiticeiro.senha, &feiticeiro.grau_id),
     ).expect("Erro ao inserir feiticeiro");
 
     Template::render("success", context! {
@@ -115,9 +122,9 @@ fn editar_feiticeiro(pool: &State<DbPool>, id: u32) -> Template {
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     let feiticeiros: Vec<Feiticeiro> = conn.exec_map(
-        "SELECT id, nome, grau, tecnica, afiliacao, login, senha FROM feiticeiros WHERE id = ? LIMIT 1",
+        "SELECT id, nome, grau_id, tecnica, afiliacao, login, senha FROM feiticeiros WHERE id = ? LIMIT 1",
         (id,),
-        |(id, nome, grau, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau, tecnica, afiliacao, login, senha),
+        |(id, nome, grau_id, tecnica, afiliacao, login, senha)| Feiticeiro::new(id, nome, grau_id, tecnica, afiliacao, login, senha),
     ).expect("Erro ao buscar feiticeiro");
 
     if let Some(feiticeiro) = feiticeiros.into_iter().next() {
@@ -134,8 +141,8 @@ fn atualizar_feiticeiro(pool: &State<DbPool>, id: u32, feiticeiro_input: Form<Fe
     let mut conn = pool.0.get_conn().expect("Falha ao conectar ao banco");
 
     conn.exec_drop(
-        "UPDATE feiticeiros SET nome = ?, grau = ?, tecnica = ?, afiliacao = ? WHERE id = ?",
-        (&feiticeiro.nome, &feiticeiro.grau, &feiticeiro.tecnica, &feiticeiro.afiliacao, id),
+        "UPDATE feiticeiros SET nome = ?, grau_id = ?, tecnica = ?, afiliacao = ? WHERE id = ?",
+        (&feiticeiro.nome, &feiticeiro.grau_id, &feiticeiro.tecnica, &feiticeiro.afiliacao, id),
     ).expect("Erro ao atualizar feiticeiro");
 
     Redirect::to("/listar-feiticeiros")
